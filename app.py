@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt
+from textblob import TextBlob
 
 # Configurer la page du tableau de bord avec un thème personnalisé
 st.set_page_config(page_title="Students Employability Dashboard", layout="wide")
@@ -71,11 +71,6 @@ col2.metric("Highest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmax(
 col3.metric("Lowest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmin(df_filtered['Placement Rate (%)'])]} ({np.min(df_filtered['Placement Rate (%)'])}%)")
 
 # section 6
-import geopandas as gpd
-import folium
-from textblob import TextBlob
-from streamlit_folium import st_folium
-
 # Exemples de données géographiques fictives (Remplacer par vos données réelles)
 geo_data = {
     "Country": ["Morocco", "France", "USA", "Germany", "Canada"],
