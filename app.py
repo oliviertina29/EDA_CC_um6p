@@ -70,6 +70,41 @@ col1.metric("Overall Placement Rate", f"{np.mean(df_filtered['Placement Rate (%)
 col2.metric("Highest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmax(df_filtered['Placement Rate (%)'])]} ({np.max(df_filtered['Placement Rate (%)'])}%)")
 col3.metric("Lowest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmin(df_filtered['Placement Rate (%)'])]} ({np.min(df_filtered['Placement Rate (%)'])}%)")
 
+# section 6
+import geopandas as gpd
+import folium
+from textblob import TextBlob
+from streamlit_folium import st_folium
+
+# Exemples de données géographiques fictives (Remplacer par vos données réelles)
+geo_data = {
+    "Country": ["Morocco", "France", "USA", "Germany", "Canada"],
+    "Recruits": [150, 80, 200, 50, 70],
+    "Lat": [31.7917, 46.6034, 37.0902, 51.1657, 56.1304],
+    "Lon": [-7.0926, 1.8883, -95.7129, 10.4515, -106.3468]
+}
+
+df_geo = pd.DataFrame(geo_data)
+
+# Créer une carte interactive avec Plotly
+fig = px.scatter_geo(df_geo, 
+                     lat='Lat', 
+                     lon='Lon', 
+                     size='Recruits', 
+                     hover_name='Country',
+                     title="Global Recruitment Heatmap",
+                     color='Recruits',
+                     size_max=80)
+
+fig.update_layout(geo=dict(
+    scope='world',
+    projection_type='natural earth'
+))
+
+# Afficher la carte dans Streamlit
+st.header("Global Recruitment Heatmap")
+st.plotly_chart(fig, use_container_width=True)
+
 # Section 2: Analyse détaillée avec prévisions
 st.header("Detailed Placement Analysis")
 
@@ -80,19 +115,36 @@ df_cohorts = pd.DataFrame({
     "Placement Rate (%)": np.random.randint(50, 90, size=len(years) * len(cohorts))
 })
 
-# Graphique de ligne pour les tendances des taux de placement
+# Graphique de ligne pour les tendances des taux de placement par cohorte
 fig2 = px.line(df_cohorts, x="Year", y="Placement Rate (%)", color="Cohort", markers=True,
                title="Placement Rate Trends by Cohort",
                color_discrete_sequence=colors)
 fig2.update_layout(xaxis_title="Year", yaxis_title="Placement Rate (%)",
                    plot_bgcolor='#F7F7F7')
-st.plotly_chart(fig2, use_container_width=True)
 
-# Ajouter une section de prévisions basées sur une tendance linéaire
-st.subheader("Forecast for Next Year")
-next_year = max(years) + 1
-forecast = df_cohorts.groupby("Year")["Placement Rate (%)"].mean().iloc[-1] * 1.05  # Simple trend estimation
-st.write(f"Estimated Placement Rate for {next_year}: {forecast:.1f}%")
+# Générer des données pour les taux de placement par niveau d'études
+df_degree = pd.DataFrame({
+    "Degree Level": ["Bachelor", "Master", "PhD"],
+    "Placement Rate (%)": [75, 85, 70]
+})
+
+# Graphique en barres pour les taux de placement par niveau d'études
+fig_degree = px.bar(df_degree, x="Degree Level", y="Placement Rate (%)",
+                    title="Placement Rate by Degree Level",
+                    color="Degree Level",
+                    color_discrete_sequence=colors)
+fig_degree.update_layout(xaxis_title="Degree Level", yaxis_title="Placement Rate (%)",
+                         plot_bgcolor='#F7F7F7')
+
+# Afficher côte à côte les graphiques de la section 2
+col1, col2 = st.columns(2)
+
+with col1:
+    st.plotly_chart(fig2, use_container_width=True)
+
+with col2:
+    st.plotly_chart(fig_degree, use_container_width=True)
+
 
 # Section 3: Performance du Career Center avec rapports téléchargeables
 st.header("Career Center Performance")
@@ -190,35 +242,73 @@ with col1:
 with col2:
     st.plotly_chart(fig5, use_container_width=True)
 
-# Section 5: Suivi du Score de Satisfaction des Parties Prenantes
-st.header("Stakeholder Satisfaction Score")
+# Paramètres généraux
+years = np.arange(2015, 2025)
+stakeholders = ["Students", "Employers", "Faculty"]
+colors = ["#636EFA", "#EF553B", "#00CC96"]
 
-# Données fictives pour les scores de satisfaction au fil du temps
-df_satisfaction_time = pd.DataFrame({
-    "Year": years,
-    "Students": np.random.randint(70, 95, size=len(years)),
-    "Employers": np.random.randint(60, 90, size=len(years)),
-    "Faculty": np.random.randint(65, 85, size=(len(years))),
-})
+# Section 1: Suivi du Score de Satisfaction des Parties Prenantes
+st.header("Stakeholder Satisfaction and Sentiment Analysis")
 
-# Graphique de ligne pour suivre l'évolution des scores de satisfaction
-fig6 = go.Figure()
-for i, stakeholder in enumerate(stakeholders):
-    fig6.add_trace(go.Scatter(x=df_satisfaction_time["Year"], y=df_satisfaction_time[stakeholder],
-                              mode='lines+markers', name=stakeholder,
-                              line=dict(color=colors[i % len(colors)])))
+# Diviser l'espace en deux colonnes
+col1, col2 = st.columns(2)
 
-fig6.update_layout(title="Stakeholder Satisfaction Over Time", xaxis_title="Year", yaxis_title="Satisfaction Score (%)",
-                   plot_bgcolor='#F7F7F7')
-st.plotly_chart(fig6, use_container_width=True)
+# Colonne 1 : Suivi du Score de Satisfaction des Parties Prenantes
+with col1:
+    st.subheader("Satisfaction Score Over Time")
 
-# Calculer la moyenne de satisfaction pour chaque stakeholder
-avg_satisfaction_students = df_satisfaction_time["Students"].mean()
-avg_satisfaction_employers = df_satisfaction_time["Employers"].mean()
-avg_satisfaction_faculty = df_satisfaction_time["Faculty"].mean()
+    # Données fictives pour les scores de satisfaction au fil du temps
+    df_satisfaction_time = pd.DataFrame({
+        "Year": years,
+        "Students": np.random.randint(70, 95, size=len(years)),
+        "Employers": np.random.randint(60, 90, size=len(years)),
+        "Faculty": np.random.randint(65, 85, size=len(years)),
+    })
 
-# Calculer la moyenne globale en prenant en compte chaque stakeholder
-avg_satisfaction = (avg_satisfaction_students + avg_satisfaction_employers + avg_satisfaction_faculty) / 3
+    # Graphique de ligne pour suivre l'évolution des scores de satisfaction
+    fig6 = go.Figure()
+    for i, stakeholder in enumerate(stakeholders):
+        fig6.add_trace(go.Scatter(x=df_satisfaction_time["Year"], y=df_satisfaction_time[stakeholder],
+                                  mode='lines+markers', name=stakeholder,
+                                  line=dict(color=colors[i % len(colors)])))
 
-# Afficher le score global de satisfaction
-st.subheader(f"Overall Stakeholder Satisfaction Score: {avg_satisfaction:.1f}%")
+    fig6.update_layout(title="Stakeholder Satisfaction Over Time", xaxis_title="Year", yaxis_title="Satisfaction Score (%)",
+                       plot_bgcolor='#F7F7F7')
+    st.plotly_chart(fig6, use_container_width=True)
+
+    # Calculer la moyenne de satisfaction pour chaque stakeholder
+    avg_satisfaction_students = df_satisfaction_time["Students"].mean()
+    avg_satisfaction_employers = df_satisfaction_time["Employers"].mean()
+    avg_satisfaction_faculty = df_satisfaction_time["Faculty"].mean()
+
+    # Calculer la moyenne globale en prenant en compte chaque stakeholder
+    avg_satisfaction = (avg_satisfaction_students + avg_satisfaction_employers + avg_satisfaction_faculty) / 3
+
+    # Afficher le score global de satisfaction
+    st.subheader(f"Overall Stakeholder Satisfaction Score: {avg_satisfaction:.1f}%")
+
+# Colonne 2 : Analyse du Sentiment des Commentaires des Parties Prenantes
+with col2:
+    st.subheader("Sentiment Analysis of Stakeholder Feedback")
+
+    # Exemples de commentaires fictifs
+    comments = [
+        "The career services are amazing!",
+        "I wish the job placement was better.",
+        "Great support from the University.",
+        "The recruitment process could be improved.",
+        "I'm very satisfied with the opportunities provided."
+    ]
+
+    # Analyse du sentiment
+    sentiments = [TextBlob(comment).sentiment.polarity for comment in comments]
+    df_sentiment = pd.DataFrame({"Comment": comments, "Sentiment Score": sentiments})
+
+    # Graphique des scores de sentiment
+    fig_sentiment = px.bar(df_sentiment, x="Comment", y="Sentiment Score",
+                           title="Sentiment Analysis of Stakeholder Comments",
+                           color="Sentiment Score",
+                           color_continuous_scale="RdYlGn")
+    fig_sentiment.update_layout(xaxis_title="Comment", yaxis_title="Sentiment Score",
+                                plot_bgcolor='#F7F7F7', xaxis_tickangle=-45)
+    st.plotly_chart(fig_sentiment, use_container_width=True)
