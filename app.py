@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 # Configurer la page du tableau de bord avec un thème personnalisé
 st.set_page_config(page_title="Students Employability Dashboard", layout="wide")
@@ -24,7 +26,7 @@ colors = px.colors.qualitative.Set2
 # Section 1: Vue d'ensemble avec filtres dynamiques
 st.header("Overview of Placement Rates")
 
-# Ajouter un filtre pour sélectionner un secteur spécifique
+# Ajouter un filtre pour sélectionner un secteur spécifique (appartient au pie chart)
 selected_sector = st.multiselect("Select Sector(s)", sectors, default=sectors)
 
 # Filtrer les données en fonction des secteurs sélectionnés
@@ -39,7 +41,27 @@ fig1 = px.pie(df_filtered, values='Placement Rate (%)', names='Sector', hole=0.4
               title="Placement Rate by Sector",
               color_discrete_sequence=colors)
 fig1.update_traces(textinfo='percent+label', marker=dict(line=dict(color='#000000', width=2)))
-st.plotly_chart(fig1, use_container_width=True)
+
+# Générer des données fictives pour les noms de métiers
+job_titles = ["Data Scientist", "Software Engineer", "Financial Analyst", "Healthcare Manager", 
+              "Teacher", "Consultant", "Civil Engineer", "Mechanical Engineer", 
+              "Project Manager", "Data Analyst", "Marketing Specialist", "Researcher"]
+job_titles *= 10  # Augmenter la fréquence des métiers
+
+# Créer un nuage de mots
+wordcloud = WordCloud(width=800, height=400, background_color='white').generate(" ".join(job_titles))
+
+# Afficher côte à côte le pie chart et le word cloud
+col1, col2 = st.columns(2)
+
+with col1:
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col2:
+    # Titre distinct pour le word cloud
+    st.subheader("Word Cloud of Job Titles")
+    # Afficher le nuage de mots dans Streamlit
+    st.image(wordcloud.to_array(), use_column_width=True)
 
 # Statistiques clés avec mise à jour dynamique
 st.subheader("Key Statistics")
@@ -200,4 +222,3 @@ avg_satisfaction = (avg_satisfaction_students + avg_satisfaction_employers + avg
 
 # Afficher le score global de satisfaction
 st.subheader(f"Overall Stakeholder Satisfaction Score: {avg_satisfaction:.1f}%")
-

@@ -14,7 +14,7 @@ This interactive dashboard allows tracking of student employability at the UM6P 
 
 ## Access the Application
 
-The application is available online at: [Deployed Application Link](https://careercenterdashboard.streamlit.app/)
+The application is available online at: [Deployed App Link](https://careercenterdashboard.streamlit.app/)
 
 ## Installation Instructions
 
