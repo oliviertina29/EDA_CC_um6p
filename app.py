@@ -257,7 +257,7 @@ with col1:
         "Year": years,
         "Students": np.random.randint(70, 95, size=len(years)),
         "Employers": np.random.randint(60, 90, size=len(years)),
-        "Faculty": np.random.randint(65, 85, size=len(years)),
+        "University": np.random.randint(65, 85, size=len(years)),
     })
 
     # Graphique de ligne pour suivre l'évolution des scores de satisfaction
