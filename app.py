@@ -18,7 +18,7 @@ sectors = ["Tech", "Finance", "Healthcare", "Education", "Consulting", "Engineer
 placement_rates = np.random.randint(50, 90, size=len(sectors))
 years = [2020, 2021, 2022, 2023]
 cohorts = ["Cohort A", "Cohort B", "Cohort C", "Cohort D"]
-stakeholders = ["Students", "Employers", "Faculty"]
+stakeholders = ["Students", "Employers", "University"]
 
 # Palette de couleurs personnalisée
 colors = px.colors.qualitative.Set2
@@ -239,7 +239,7 @@ with col2:
 
 # Paramètres généraux
 years = np.arange(2015, 2025)
-stakeholders = ["Students", "Employers", "Faculty"]
+stakeholders = ["Students", "Employers", "University"]
 colors = ["#636EFA", "#EF553B", "#00CC96"]
 
 # Section 1: Suivi du Score de Satisfaction des Parties Prenantes
@@ -274,7 +274,7 @@ with col1:
     # Calculer la moyenne de satisfaction pour chaque stakeholder
     avg_satisfaction_students = df_satisfaction_time["Students"].mean()
     avg_satisfaction_employers = df_satisfaction_time["Employers"].mean()
-    avg_satisfaction_faculty = df_satisfaction_time["Faculty"].mean()
+    avg_satisfaction_faculty = df_satisfaction_time["University"].mean()
 
     # Calculer la moyenne globale en prenant en compte chaque stakeholder
     avg_satisfaction = (avg_satisfaction_students + avg_satisfaction_employers + avg_satisfaction_faculty) / 3
