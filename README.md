@@ -22,7 +22,7 @@ To run the application locally, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/your-repo.git
+    git clone https://github.com/oliviertina29/EDA_CC_um6p.git
     cd your-repo
     ```
 
