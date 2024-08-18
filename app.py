@@ -73,10 +73,14 @@ col3.metric("Lowest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmin(d
 # section 6
 # Exemples de données géographiques fictives (Remplacer par vos données réelles)
 geo_data = {
-    "Country": ["Morocco", "France", "USA", "Germany", "Canada"],
-    "Recruits": [150, 80, 200, 50, 70],
-    "Lat": [31.7917, 46.6034, 37.0902, 51.1657, 56.1304],
-    "Lon": [-7.0926, 1.8883, -95.7129, 10.4515, -106.3468]
+    "Country": ["Morocco", "France", "USA", "Germany", "Canada",
+                "Senegal", "Ivory Coast", "Nigeria", "Kenya", "Ghana", "Mali", "South Africa", "Cameroon"],
+    "Recruits": [150, 80, 35, 50, 70, 
+                 90, 55, 120, 75, 65, 40, 85, 40],
+    "Lat": [31.7917, 46.6034, 37.0902, 51.1657, 56.1304, 
+            14.4974, 7.539989, 9.0820, -1.2921, 7.9465, 12.6392, -30.5595, 3.8480],
+    "Lon": [-7.0926, 1.8883, -95.7129, 10.4515, -106.3468, 
+            -14.4524, -5.5471, 8.6753, 36.8219, -1.0232, -8.0029, 22.9375, 11.5021]
 }
 
 df_geo = pd.DataFrame(geo_data)
@@ -89,16 +93,22 @@ fig = px.scatter_geo(df_geo,
                      hover_name='Country',
                      title="Global Recruitment Heatmap",
                      color='Recruits',
-                     size_max=80)
+                     size_max=50)
 
-fig.update_layout(geo=dict(
-    scope='world',
-    projection_type='natural earth'
-))
+# Mettre à jour la disposition pour agrandir la carte
+fig.update_layout(
+    geo=dict(
+        scope='world',
+        projection_type='natural earth'
+    ),
+    width=1300,  # Largeur de la carte
+    height=800   # Hauteur de la carte
+)
 
 # Afficher la carte dans Streamlit
 st.header("Global Recruitment Heatmap")
 st.plotly_chart(fig, use_container_width=True)
+
 
 # Section 2: Analyse détaillée avec prévisions
 st.header("Detailed Placement Analysis")
