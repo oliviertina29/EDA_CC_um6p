@@ -269,10 +269,31 @@ with col1:
 with col2:
     st.plotly_chart(fig4, use_container_width=True)
 
-# Affichage du budget utilisé
-st.subheader(f"Budget Utilized: {budget_used:.1f}% of Total")
+# Affichage du budget utilisé avec amélioration esthétique
+st.markdown(
+    f"""
+    <div style='background-color: #FFD700; padding: 10px; border-radius: 5px; text-align: center;'>
+        <h2 style='color: #000;'>Budget Utilized: {budget_used:.1f}% of Total</h2>
+    </div>
+    """, unsafe_allow_html=True
+)
 
-# Bouton pour télécharger les données sous forme de CSV
+# Bouton pour télécharger les données sous forme de CSV avec style
+st.markdown(
+    """
+    <style>
+    .stDownloadButton button {
+        background-color: #6C63FF;
+        color: white;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.download_button(label="Download Performance Data", 
                    data=df_performance.to_csv(index=False), 
                    file_name='career_center_performance.csv',
@@ -350,7 +371,7 @@ years = np.arange(2015, 2025)
 stakeholders = ["Students", "Employers", "University"]
 colors = ["#636EFA", "#EF553B", "#00CC96"]
 
-# Section 1: Suivi du Score de Satisfaction des Parties Prenantes
+# Section 6: Suivi du Score de Satisfaction des Parties Prenantes
 st.header("Stakeholder Satisfaction and Sentiment Analysis")
 
 # Diviser l'espace en deux colonnes
@@ -363,7 +384,7 @@ with col1:
     # Données fictives pour les scores de satisfaction au fil du temps
     df_satisfaction_time = pd.DataFrame({
         "Year": years,
-        "Students": np.random.randint(70, 95, size=len(years)),
+        "Students": np.random.randint(75, 95, size=len(years)),
         "Employers": np.random.randint(60, 90, size=len(years)),
         "University": np.random.randint(65, 85, size=len(years)),
     })
@@ -386,9 +407,6 @@ with col1:
 
     # Calculer la moyenne globale en prenant en compte chaque stakeholder
     avg_satisfaction = (avg_satisfaction_students + avg_satisfaction_employers + avg_satisfaction_faculty) / 3
-
-    # Afficher le score global de satisfaction
-    st.subheader(f"Overall Stakeholder Satisfaction Score: {avg_satisfaction:.1f}%")
 
 # Colonne 2 : Analyse du Sentiment des Commentaires des Parties Prenantes
 with col2:
@@ -415,3 +433,11 @@ with col2:
     fig_sentiment.update_layout(xaxis_title="Comment", yaxis_title="Sentiment Score",
                                 plot_bgcolor='#F7F7F7', xaxis_tickangle=-45)
     st.plotly_chart(fig_sentiment, use_container_width=True)
+
+st.markdown(
+        f"""
+        <div style='background-color: #6C63FF; padding: 10px; border-radius: 5px; text-align: center;'>
+            <h2 style='color: #000;'>Overall Stakeholder Satisfaction Score: {avg_satisfaction:.1f}%</h2>
+        </div>
+        """, unsafe_allow_html=True
+    )
