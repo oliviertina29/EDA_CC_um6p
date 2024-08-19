@@ -50,7 +50,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Titre principal
-st.markdown("<h1 class='main-title'>UM6P Career Center Dashboard: Student Employability Tracking</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-title'>Student Employability Monitoring</h1>", unsafe_allow_html=True)
 
 # Générer des données fictives pour le tableau de bord
 np.random.seed(42)
