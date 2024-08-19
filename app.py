@@ -6,11 +6,51 @@ import plotly.graph_objects as go
 from wordcloud import WordCloud
 from textblob import TextBlob
 
+
 # Configurer la page du tableau de bord avec un thème personnalisé
 st.set_page_config(page_title="Students Employability Dashboard", layout="wide")
 
+# Style CSS pour les titres
+st.markdown("""
+    <style>
+        /* Style pour le titre principal */
+        .main-title {
+            font-size: 3em;
+            font-weight: bold;
+            color: #1F4E79;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Style pour les titres de section */
+        .section-title {
+            font-size: 2em;
+            color: #1F4E79;
+            text-align: left;
+            margin-top: 40px;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #1F4E79;
+            padding-bottom: 10px;
+        }
+
+        /* Style global pour améliorer la typographie */
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        /* Style pour les sous-titres */
+        .sub-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4B8BBE;
+            margin-bottom: 20px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Titre principal
-st.title("UM6P Career Center Dashboard: Student Employability Tracking")
+st.markdown("<h1 class='main-title'>UM6P Career Center Dashboard: Student Employability Tracking</h1>", unsafe_allow_html=True)
 
 # Générer des données fictives pour le tableau de bord
 np.random.seed(42)
@@ -24,7 +64,7 @@ stakeholders = ["Students", "Employers", "University"]
 colors = px.colors.qualitative.Set2
 
 # Section 1: Vue d'ensemble avec filtres dynamiques
-st.header("Overview of Placement Rates")
+st.markdown("<h2 class='section-title'>Overview of Placement Rates</h2>", unsafe_allow_html=True)
 
 # Ajouter un filtre pour sélectionner un secteur spécifique (appartient au pie chart)
 selected_sector = st.multiselect("Select Sector(s)", sectors, default=sectors)
@@ -144,12 +184,12 @@ fig.update_layout(
 )
 
 # Afficher la carte dans Streamlit
-st.header("Global Recruitment Heatmap")
+st.markdown("<h2 class='section-title'>Global Recruitment Heatmap</h2>", unsafe_allow_html=True)
 st.plotly_chart(fig, use_container_width=True)
 
 
 # Section 3: Analyse détaillée avec prévisions
-st.header("Detailed Placement Analysis")
+st.markdown("<h2 class='section-title'>Detailed Placement Analysis</h2>", unsafe_allow_html=True)
 
 # Palette de couleurs améliorée
 colors = ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A"]
@@ -206,7 +246,7 @@ with col2:
     st.plotly_chart(fig_degree, use_container_width=True)
 
 # Section 4: Performance du Career Center avec rapports téléchargeables
-st.header("Career Center Performance")
+st.markdown("<h2 class='section-title'>Career Center Performance</h2>", unsafe_allow_html=True)
 
 # Générer des données fictives pour la satisfaction des parties prenantes
 satisfaction_scores = np.random.randint(70, 100, size=len(stakeholders))
@@ -301,7 +341,7 @@ st.download_button(label="Download Performance Data",
 
 
 # Section 5: Analyse des tendances du marché avec comparaison intersectorielle
-st.header("Market Trends Analysis")
+st.markdown("<h2 class='section-title'>Market Trends Analysis</h2>", unsafe_allow_html=True)
 
 # Générer des données fictives pour les entreprises qui recrutent
 companies = ["Company A", "Company B", "Company C", "Company D", "Company E"]
@@ -372,7 +412,7 @@ stakeholders = ["Students", "Employers", "University"]
 colors = ["#636EFA", "#EF553B", "#00CC96"]
 
 # Section 6: Suivi du Score de Satisfaction des Parties Prenantes
-st.header("Stakeholder Satisfaction and Sentiment Analysis")
+st.markdown("<h2 class='section-title'>Stakeholder Satisfaction and Sentiment Analysis</h2>", unsafe_allow_html=True)
 
 # Diviser l'espace en deux colonnes
 col1, col2 = st.columns(2)
