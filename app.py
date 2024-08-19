@@ -34,22 +34,24 @@ df_overview = pd.DataFrame({
     "Sector": sectors,
     "Placement Rate (%)": placement_rates
 })
-df_filtered = df_overview[df_overview["Sector"].isin(selected_sector)]
+df_filtered = df_overview[df_overview["Sector"].isin(selected_sector)] if selected_sector else df_overview.copy()
 
 # Graphique en anneau pour les taux de placement par secteur
 fig1 = px.pie(df_filtered, values='Placement Rate (%)', names='Sector', hole=0.4, 
               title="Placement Rate by Sector",
               color_discrete_sequence=colors)
-fig1.update_traces(textinfo='percent+label', marker=dict(line=dict(color='#000000', width=2)))
+fig1.update_traces(textinfo='percent+label', textposition='inside',
+                   marker=dict(line=dict(color='#000000', width=2)))
+fig1.update_layout(showlegend=True, margin=dict(t=50, b=0, l=0, r=0))
 
-# Générer des données fictives pour les noms de métiers
+# Générer des données fictives pour les noms de métiers (exemple pour la démonstration)
 job_titles = ["Data Scientist", "Software Engineer", "Financial Analyst", "Healthcare Manager", 
               "Teacher", "Consultant", "Civil Engineer", "Mechanical Engineer", 
               "Project Manager", "Data Analyst", "Marketing Specialist", "Researcher"]
 job_titles *= 10  # Augmenter la fréquence des métiers
 
-# Créer un nuage de mots
-wordcloud = WordCloud(width=800, height=400, background_color='white').generate(" ".join(job_titles))
+# Créer un nuage de mots avec un design harmonisé
+wordcloud = WordCloud(width=800, height=400, background_color='white', colormap='plasma').generate(" ".join(job_titles))
 
 # Afficher côte à côte le pie chart et le word cloud
 col1, col2 = st.columns(2)
@@ -63,14 +65,50 @@ with col2:
     # Afficher le nuage de mots dans Streamlit
     st.image(wordcloud.to_array(), use_column_width=True)
 
-# Statistiques clés avec mise à jour dynamique
+# Statistiques clés avec mise en valeur
 st.subheader("Key Statistics")
-col1, col2, col3 = st.columns(3)
-col1.metric("Overall Placement Rate", f"{np.mean(df_filtered['Placement Rate (%)']):.1f}%")
-col2.metric("Highest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmax(df_filtered['Placement Rate (%)'])]} ({np.max(df_filtered['Placement Rate (%)'])}%)")
-col3.metric("Lowest Placement Sector", f"{df_filtered['Sector'].iloc[np.argmin(df_filtered['Placement Rate (%)'])]} ({np.min(df_filtered['Placement Rate (%)'])}%)")
 
-# section 6
+# Créer une palette de couleurs harmonisée pour les statistiques
+background_colors = ["#6C63FF", "#FF6347", "#FFD700"]
+text_color = "white"
+
+# Liste des statistiques clés
+metrics = [
+    {
+        "title": "Overall Placement Rate",
+        "value": f"{np.mean(df_filtered['Placement Rate (%)']):.1f}%",
+        "background_color": background_colors[0],
+        "icon": "fa-line-chart"
+    },
+    {
+        "title": "Highest Placement Sector",
+        "value": f"{df_filtered['Sector'].iloc[np.argmax(df_filtered['Placement Rate (%)'])]} ({np.max(df_filtered['Placement Rate (%)'])}%)",
+        "background_color": background_colors[1],
+        "icon": "fa-arrow-up"
+    },
+    {
+        "title": "Lowest Placement Sector",
+        "value": f"{df_filtered['Sector'].iloc[np.argmin(df_filtered['Placement Rate (%)'])]} ({np.min(df_filtered['Placement Rate (%)'])}%)",
+        "background_color": background_colors[2],
+        "icon": "fa-arrow-down"
+    }
+]
+
+# Afficher les statistiques en utilisant les colonnes de Streamlit avec un style réactif
+cols = st.columns(len(metrics))
+
+for col, metric in zip(cols, metrics):
+    col.markdown(
+        f"""
+        <div style='background-color: {metric['background_color']}; padding: 20px; border-radius: 10px; text-align: center;'>
+            <h3 style='color: {text_color}; margin-bottom: 10px;'>{metric['title']}</h3>
+            <i style='color: {text_color}; font-size: 30px; margin-bottom: 10px;' class="fa {metric['icon']}"></i>
+            <p style='font-size: 35px; color: {text_color}; font-weight: bold; margin: 0;'>{metric['value']}</p>
+        </div>
+        """, unsafe_allow_html=True
+    )
+
+# section 2
 # Exemples de données géographiques fictives (Remplacer par vos données réelles)
 geo_data = {
     "Country": ["Morocco", "France", "USA", "Germany", "Canada",
@@ -110,8 +148,11 @@ st.header("Global Recruitment Heatmap")
 st.plotly_chart(fig, use_container_width=True)
 
 
-# Section 2: Analyse détaillée avec prévisions
+# Section 3: Analyse détaillée avec prévisions
 st.header("Detailed Placement Analysis")
+
+# Palette de couleurs améliorée
+colors = ["#636EFA", "#EF553B", "#00CC96", "#AB63FA", "#FFA15A"]
 
 # Générer des données fictives pour les cohortes et les années
 df_cohorts = pd.DataFrame({
@@ -125,7 +166,14 @@ fig2 = px.line(df_cohorts, x="Year", y="Placement Rate (%)", color="Cohort", mar
                title="Placement Rate Trends by Cohort",
                color_discrete_sequence=colors)
 fig2.update_layout(xaxis_title="Year", yaxis_title="Placement Rate (%)",
-                   plot_bgcolor='#F7F7F7')
+                   plot_bgcolor='#FAFAFA',
+                   paper_bgcolor='#FAFAFA',
+                   font=dict(family="Arial, sans-serif", size=12, color="#2a2a2a"),
+                   title_font=dict(size=16, color="#2a2a2a", family="Arial, sans-serif"),
+                   legend_title=dict(font=dict(size=14, color="#2a2a2a")),
+                   xaxis=dict(showline=True, linewidth=2, linecolor='black'),
+                   yaxis=dict(showline=True, linewidth=2, linecolor='black'),
+                   hovermode="x unified")
 
 # Générer des données pour les taux de placement par niveau d'études
 df_degree = pd.DataFrame({
@@ -139,7 +187,14 @@ fig_degree = px.bar(df_degree, x="Degree Level", y="Placement Rate (%)",
                     color="Degree Level",
                     color_discrete_sequence=colors)
 fig_degree.update_layout(xaxis_title="Degree Level", yaxis_title="Placement Rate (%)",
-                         plot_bgcolor='#F7F7F7')
+                         plot_bgcolor='#FAFAFA',
+                         paper_bgcolor='#FAFAFA',
+                         font=dict(family="Arial, sans-serif", size=12, color="#2a2a2a"),
+                         title_font=dict(size=16, color="#2a2a2a", family="Arial, sans-serif"),
+                         legend_title=dict(font=dict(size=14, color="#2a2a2a")),
+                         xaxis=dict(showline=True, linewidth=2, linecolor='black'),
+                         yaxis=dict(showline=True, linewidth=2, linecolor='black'),
+                         hovermode="x unified")
 
 # Afficher côte à côte les graphiques de la section 2
 col1, col2 = st.columns(2)
@@ -150,11 +205,10 @@ with col1:
 with col2:
     st.plotly_chart(fig_degree, use_container_width=True)
 
-
-# Section 3: Performance du Career Center avec rapports téléchargeables
+# Section 4: Performance du Career Center avec rapports téléchargeables
 st.header("Career Center Performance")
 
-# Générer des données fictives pour la satisfaction des parties prenantes et le budget utilisé
+# Générer des données fictives pour la satisfaction des parties prenantes
 satisfaction_scores = np.random.randint(70, 100, size=len(stakeholders))
 budget_used = np.random.uniform(50, 100)
 
@@ -163,14 +217,57 @@ df_performance = pd.DataFrame({
     "Satisfaction Score (%)": satisfaction_scores
 })
 
-# Graphique en barres pour la satisfaction des parties prenantes
-fig3 = px.bar(df_performance, x='Stakeholder', y='Satisfaction Score (%)', text_auto=True, 
-              title="Stakeholder Satisfaction",
-              color='Stakeholder',
-              color_discrete_sequence=colors)
-fig3.update_layout(xaxis_title="Stakeholder", yaxis_title="Satisfaction Score (%)",
-                   plot_bgcolor='#F7F7F7')
-st.plotly_chart(fig3, use_container_width=True)
+# Graphique en radar pour la satisfaction des parties prenantes
+fig3 = go.Figure()
+
+fig3.add_trace(go.Scatterpolar(
+    r=df_performance['Satisfaction Score (%)'],
+    theta=df_performance['Stakeholder'],
+    fill='toself',
+    name='Satisfaction Score',
+    marker=dict(color='#FF6347')
+))
+
+fig3.update_layout(
+    polar=dict(
+        radialaxis=dict(visible=True, range=[0, 100]),
+    ),
+    showlegend=False,
+    title="Stakeholder Satisfaction",
+    margin=dict(l=40, r=40, t=40, b=40),
+)
+
+# Ajout d'un graphique Scatterpolar pour la satisfaction moyenne par catégorie
+categories = ["Communication", "Support", "Resources", "Events"]
+category_scores = np.random.randint(70, 100, size=len(categories))
+
+fig4 = go.Figure()
+
+fig4.add_trace(go.Scatterpolar(
+    r=category_scores,
+    theta=categories,
+    fill='toself',
+    name='Category Satisfaction',
+    marker=dict(color='#6C63FF')
+))
+
+fig4.update_layout(
+    polar=dict(
+        radialaxis=dict(visible=True, range=[0, 100]),
+    ),
+    showlegend=False,
+    title="Category Satisfaction",
+    margin=dict(l=40, r=40, t=40, b=40),
+)
+
+# Afficher les deux graphiques côte à côte
+col1, col2 = st.columns(2)
+
+with col1:
+    st.plotly_chart(fig3, use_container_width=True)
+
+with col2:
+    st.plotly_chart(fig4, use_container_width=True)
 
 # Affichage du budget utilisé
 st.subheader(f"Budget Utilized: {budget_used:.1f}% of Total")
@@ -181,7 +278,8 @@ st.download_button(label="Download Performance Data",
                    file_name='career_center_performance.csv',
                    mime='text/csv')
 
-# Section 4: Analyse des tendances du marché avec comparaison intersectorielle
+
+# Section 5: Analyse des tendances du marché avec comparaison intersectorielle
 st.header("Market Trends Analysis")
 
 # Générer des données fictives pour les entreprises qui recrutent
