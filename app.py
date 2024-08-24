@@ -6,7 +6,6 @@ import plotly.graph_objects as go
 from wordcloud import WordCloud
 from textblob import TextBlob
 
-
 # Configurer la page du tableau de bord avec un thème personnalisé
 st.set_page_config(page_title="Students Employability Dashboard", layout="wide")
 
@@ -454,30 +453,77 @@ with col2:
 
     # Exemples de commentaires fictifs
     comments = [
+        # Commentaires positifs (80%)
         "The career services are amazing!",
-        "I wish the job placement was better.",
+        "The mentorship program is fantastic!",
+        "I'm very satisfied with the opportunities provided.",
         "Great support from the University.",
+        "Excellent career coaching and resources.",
+        "The job fair was very well organized!",
+        "I found the career advice to be extremely helpful.",
+        "The university's network has been invaluable for my job search.",
+        "Amazing internship opportunities available!",
+        "The career center staff are very supportive.",
+        "I received great feedback during the mock interviews.",
+        "The resume review service was top-notch.",
+        "Very pleased with the company connections the university has.",
+        "The workshops offered have been incredibly useful.",
+        "I appreciate the personalized career guidance.",
+        "Great experience with the job placement services.",
+        "The career fairs have a lot of great companies attending.",
+        "The alumni network is very active and helpful.",
+        "Really enjoyed the career development seminars.",
+        "The university has great resources for career planning.",
+
+        # Commentaires neutres (15%)
+        "The career services are decent.",
+        "The job placement rate is okay.",
+        "Career counseling sessions are average.",
+        "The job fair was good, but could be better.",
+        "The recruitment process is fine.",
+        "I feel the career services meet my basic needs.",
+        "The career center is functional.",
+        "The internship options are alright.",
+        "It was an average experience overall.",
+        "The career guidance was satisfactory.",
+        
+        # Commentaires négatifs (5%)
+        "I wish the job placement was better.",
         "The recruitment process could be improved.",
-        "I'm very satisfied with the opportunities provided."
+        "Not satisfied with the career services offered.",
+        "The career fair lacked diversity in companies.",
+        "The job search support is lacking."
     ]
 
     # Analyse du sentiment
     sentiments = [TextBlob(comment).sentiment.polarity for comment in comments]
     df_sentiment = pd.DataFrame({"Comment": comments, "Sentiment Score": sentiments})
 
-    # Graphique des scores de sentiment
-    fig_sentiment = px.bar(df_sentiment, x="Comment", y="Sentiment Score",
-                           title="Sentiment Analysis of Stakeholder Comments",
-                           color="Sentiment Score",
-                           color_continuous_scale="RdYlGn")
-    fig_sentiment.update_layout(xaxis_title="Comment", yaxis_title="Sentiment Score",
-                                plot_bgcolor='#F7F7F7', xaxis_tickangle=-45)
-    st.plotly_chart(fig_sentiment, use_container_width=True)
+    # Catégoriser les commentaires selon la polarité
+    df_sentiment["Sentiment"] = df_sentiment["Sentiment Score"].apply(lambda x: 'Positive' if x > 0.1 else ('Neutral' if x >= -0.1 else 'Negative'))
 
-st.markdown(
-        f"""
-        <div style='background-color: #6C63FF; padding: 10px; border-radius: 5px; text-align: center;'>
-            <h2 style='color: #000;'>Overall Stakeholder Satisfaction Score: {avg_satisfaction:.1f}%</h2>
-        </div>
-        """, unsafe_allow_html=True
+    # Compter le nombre de commentaires dans chaque catégorie
+    sentiment_counts = df_sentiment["Sentiment"].value_counts().reindex(["Positive", "Neutral", "Negative"], fill_value=0)
+
+    # Créer un graphique en barres pour montrer le nombre de commentaires par polarité
+    fig_sentiment = go.Figure(data=[
+        go.Bar(
+            x=sentiment_counts.index,
+            y=sentiment_counts.values,
+            text=[
+                "<br>".join(df_sentiment[df_sentiment["Sentiment"] == sentiment]["Comment"].values[:2])
+                for sentiment in sentiment_counts.index
+            ],
+            textposition='auto',
+            marker_color=['green', 'gray', 'red']
+        )
+    ])
+    
+    fig_sentiment.update_layout(
+        title="Sentiment Analysis of Stakeholder Comments",
+        xaxis_title="Sentiment",
+        yaxis_title="Number of Comments",
+        plot_bgcolor='#F7F7F7'
     )
+
+    st.plotly_chart(fig_sentiment, use_container_width=True)
